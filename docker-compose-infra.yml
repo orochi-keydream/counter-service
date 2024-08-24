@@ -1,0 +1,113 @@
+name: "counter-service"
+
+networks:
+  counter-service-nw:
+    name: counter-service-nw
+    driver: bridge
+  kafka-nw:
+    name: kafka-nw
+    driver: bridge
+
+services:
+  postgres:
+    container_name: "${COMPOSE_PROJECT_NAME}-postgres"
+    image: postgres:16.4
+    ports:
+      - "35432:5432"
+    networks:
+      - counter-service-nw
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "123"
+
+  zookeeper:
+    container_name: "zookeeper"
+    image: confluentinc/cp-zookeeper:latest
+    networks:
+      - kafka-nw
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: ${COMPOSE_PROJECT_NAME}-zookeeper:2888:3888
+    healthcheck:
+      test: echo stat | nc localhost 2181
+      interval: 10s
+      timeout: 10s
+      retries: 3
+  #    ports:
+  #      - "2181:2181"
+  #      - "2888:2888"
+  #      - "3888:3888"
+
+  kafka1:
+    container_name: "kafka1"
+    image: confluentinc/cp-kafka:latest
+    networks:
+      - kafka-nw
+    healthcheck:
+      test: ps augwwx | egrep [S]upportedKafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9091:9091"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: LISTENER_INT://kafka1:29091,LISTENER_EXT://0.0.0.0:9091
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_INT://kafka1:29091,LISTENER_EXT://localhost:9091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_INT:PLAINTEXT,LISTENER_EXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INT
+      ZOOKEEPER: zookeeper:2181
+
+  kafka2:
+    container_name: "kafka2"
+    image: confluentinc/cp-kafka:latest
+    networks:
+      - kafka-nw
+    healthcheck:
+      test: ps augwwx | egrep [S]upportedKafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_LISTENERS: LISTENER_INT://kafka2:29092,LISTENER_EXT://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_INT://kafka2:29092,LISTENER_EXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_INT:PLAINTEXT,LISTENER_EXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INT
+      ZOOKEEPER: zookeeper:2181
+
+  kafka3:
+    container_name: "kafka3"
+    image: confluentinc/cp-kafka:latest
+    networks:
+      - kafka-nw
+    healthcheck:
+      test: ps augwwx | egrep [S]upportedKafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_LISTENERS: LISTENER_INT://kafka3:29093,LISTENER_EXT://0.0.0.0:9093
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_INT://kafka3:29093,LISTENER_EXT://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_INT:PLAINTEXT,LISTENER_EXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_INT
+      ZOOKEEPER: zookeeper:2181
+
+  kafka-ui:
+    container_name: "kafka-ui"
+    image: provectuslabs/kafka-ui:latest
+    networks:
+      - kafka-nw
+    ports:
+      - "28080:8080"
+    environment:
+      DYNAMIC_CONFIG_ENABLED: true

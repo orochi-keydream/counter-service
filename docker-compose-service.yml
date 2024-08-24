@@ -1,0 +1,24 @@
+networks:
+  counter-service-nw:
+    name: counter-service-nw
+    driver: bridge
+  interservice-nw:
+    name: interservice-nw
+    driver: bridge
+  kafka-nw:
+    name: kafka-nw
+    driver: bridge
+
+services:
+  backend:
+    container_name: counter-service-backend
+    image: counter-service:0.1.0
+    build:
+      context: ./
+      dockerfile: service.Dockerfile
+    networks:
+      - counter-service-nw
+      - interservice-nw
+      - kafka-nw
+    ports:
+      - "38084:8084"
