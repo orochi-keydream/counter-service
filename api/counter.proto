@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package counter;
+
+option go_package = "github.com/orochi-keydream/counter-service/api/counter";
+
+service CounterService {
+  rpc GetUnreadCountTotalV1 (GetUnreadCountTotalV1Request) returns (GetUnreadCountTotalV1Response);
+  rpc GetUnreadCountV1 (GetUnreadCountV1Request) returns (GetUnreadCountV1Response);
+  rpc MarkMessagesAsReadV1 (MarkMessagesAsReadV1Request) returns (MarkMessagesAsReadV1Response);
+}
+
+message GetUnreadCountTotalV1Request {
+  string user_id = 1;
+}
+
+message GetUnreadCountTotalV1Response {
+  int32 count = 1;
+}
+
+message GetUnreadCountV1Request {
+  string current_user_id = 1;
+  string chat_user_id = 2;
+}
+
+message GetUnreadCountV1Response {
+  int32 count = 1;
+}
+
+message MarkMessagesAsReadV1Request {
+  string user_id = 1;
+  repeated int64 message_ids = 2;
+}
+
+message MarkMessagesAsReadV1Response {}

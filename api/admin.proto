@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package admin;
+
+option go_package = "github.com/orochi-keydream/counter-service/api/admin";
+
+service CounterService {
+  rpc SetRollbackAllMessagesModeV1 (SetRollbackAllMessagesModeV1Request) returns (SetRollbackAllMessagesModeV1Response);
+}
+
+message SetRollbackAllMessagesModeV1Request {
+  bool is_enabled = 1;
+}
+
+message SetRollbackAllMessagesModeV1Response {}
