@@ -1,0 +1,18 @@
+kafka:
+  brokers:
+    - localhost:9091
+    - localhost:9092
+    - localhost:9093
+  producers:
+    counter_commands:
+      topic: "counter_commands"
+  consumers:
+    dialogue_commands:
+      topic: "dialogue_commands"
+
+database:
+  host: "localhost"
+  port: 5432
+  dbname: "postgres"
+  user: "postgres"
+  password: ""
