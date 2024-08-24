@@ -1,0 +1,21 @@
+service:
+  grpc_port: 8084
+
+kafka:
+  brokers:
+    - kafka1:29091
+    - kafka2:29092
+    - kafka3:29093
+  producers:
+    dialogue_commands:
+      topic: "dialogue_commands"
+  consumers:
+    counter_commands:
+      topic: "counter_commands"
+
+database:
+  host: "counter-service-postgres"
+  port: 5432
+  dbname: "postgres"
+  user: "postgres"
+  password: "123"
